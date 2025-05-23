@@ -2,7 +2,7 @@ package com.example.intrumentos.Entities;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime; // <--- CAMBIO IMPORTANTE: Importar LocalDateTime
 import java.util.List;
 
 @Entity
@@ -12,25 +12,27 @@ public class Pedido implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Date fechaPedido;
+    // AÑADIR @Temporal(TemporalType.TIMESTAMP) AQUI NO ES NECESARIO CON LocalDateTime.
+    // JPA 2.2+ (con Spring Boot 3.x) mapea LocalDateTime a DATETIME/TIMESTAMP automáticamente.
+    private LocalDateTime fechaPedido; // <--- CAMBIO IMPORTANTE: Tipo a LocalDateTime
 
     private Double totalPedido;
 
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true) // Agregado orphanRemoval
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PedidoDetalle> detalles;
 
     // --- Constructores ---
     public Pedido() {
     }
 
-    public Pedido(Long id, Date fechaPedido, Double totalPedido, List<PedidoDetalle> detalles) {
+    public Pedido(Long id, LocalDateTime fechaPedido, Double totalPedido, List<PedidoDetalle> detalles) {
         this.id = id;
         this.fechaPedido = fechaPedido;
         this.totalPedido = totalPedido;
         this.detalles = detalles;
     }
 
-    public Pedido(Date fechaPedido, Double totalPedido, List<PedidoDetalle> detalles) {
+    public Pedido(LocalDateTime fechaPedido, Double totalPedido, List<PedidoDetalle> detalles) {
         this.fechaPedido = fechaPedido;
         this.totalPedido = totalPedido;
         this.detalles = detalles;
@@ -41,7 +43,7 @@ public class Pedido implements Serializable {
         return id;
     }
 
-    public Date getFechaPedido() {
+    public LocalDateTime getFechaPedido() { // <--- CAMBIO: Getter retorna LocalDateTime
         return fechaPedido;
     }
 
@@ -58,7 +60,7 @@ public class Pedido implements Serializable {
         this.id = id;
     }
 
-    public void setFechaPedido(Date fechaPedido) {
+    public void setFechaPedido(LocalDateTime fechaPedido) { // <--- CAMBIO: Setter recibe LocalDateTime
         this.fechaPedido = fechaPedido;
     }
 
@@ -76,13 +78,13 @@ public class Pedido implements Serializable {
             this.detalles = new java.util.ArrayList<>();
         }
         this.detalles.add(detalle);
-        detalle.setPedido(this); // Asegura la relación bidireccional
+        detalle.setPedido(this);
     }
 
     public void removeDetalle(PedidoDetalle detalle) {
         if (this.detalles != null) {
             this.detalles.remove(detalle);
-            detalle.setPedido(null); // Desvincula
+            detalle.setPedido(null);
         }
     }
 }

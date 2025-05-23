@@ -58,6 +58,10 @@ export function Home() {
             texto={`Carrito ( ${totalItems} )`}
             destino="/carrito"
           />
+          <BotonNavegar
+            texto={`Charts`}
+            destino="/charts"
+          />
 
           {/* Lógica condicional para el botón de sesión */}
           {isAuthenticated ? (

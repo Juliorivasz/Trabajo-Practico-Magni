@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
+import java.time.LocalDateTime; // <--- CAMBIO IMPORTANTE: Importar LocalDateTime
 import java.util.List;
 import java.util.Optional;
 
@@ -29,66 +29,64 @@ public class PedidoController {
     public ResponseEntity<Pedido> crearPedido(@RequestBody Pedido pedido) {
         double total = 0;
 
-        pedido.setFechaPedido(new Date()); // Establece la fecha del pedido
+        // Establece la fecha del pedido usando LocalDateTime.now()
+        // LocalDateTime.now() toma la fecha y hora de la JVM sin información de zona horaria explícita,
+        // lo cual es lo que queremos para un campo DATETIME en la DB.
+        pedido.setFechaPedido(LocalDateTime.now()); // <--- CAMBIO IMPORTANTE
 
-        if (pedido.getDetalles() != null && !pedido.getDetalles().isEmpty()) { // Añadido check de .isEmpty()
+        if (pedido.getDetalles() != null && !pedido.getDetalles().isEmpty()) {
             for (PedidoDetalle detalle : pedido.getDetalles()) {
-                // Busca el instrumento por su ID
                 Instrumento instrumento = instrumentoRepository.findById(detalle.getInstrumento().getId())
                         .orElseThrow(() -> new RuntimeException("Instrumento no encontrado con ID: " + detalle.getInstrumento().getId()));
 
-                // Actualiza la cantidad vendida del instrumento
                 int vendidosActuales = instrumento.getCantidadVendida() != null ? instrumento.getCantidadVendida() : 0;
                 instrumento.setCantidadVendida(vendidosActuales + detalle.getCantidad());
-                instrumentoRepository.save(instrumento); // Guarda el instrumento actualizado
+                instrumentoRepository.save(instrumento);
 
-                detalle.setInstrumento(instrumento); // Asigna la instancia completa del instrumento
-                detalle.setPedido(pedido); // Vincula el detalle al pedido padre
+                detalle.setInstrumento(instrumento);
+                detalle.setPedido(pedido);
 
                 total += instrumento.getPrecio() * detalle.getCantidad();
             }
         } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Si no hay detalles
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        pedido.setTotalPedido(total); // Calcula y establece el total
+        pedido.setTotalPedido(total);
 
-        Pedido pedidoGuardado = pedidoRepository.save(pedido); // Guarda el pedido completo
+        Pedido pedidoGuardado = pedidoRepository.save(pedido);
 
-        return new ResponseEntity<>(pedidoGuardado, HttpStatus.CREATED); // Devuelve el pedido guardado
+        return new ResponseEntity<>(pedidoGuardado, HttpStatus.CREATED);
     }
 
     // --- NUEVOS ENDPOINTS ---
 
-    // Endpoint para obtener todos los pedidos
-    @GetMapping // Por defecto en /api/pedidos
+    @GetMapping
     public ResponseEntity<List<Pedido>> getAllPedidos() {
         List<Pedido> pedidos = pedidoRepository.findAll();
         if (pedidos.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Código 204 si no hay contenido
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(pedidos, HttpStatus.OK); // Código 200 con la lista de pedidos
+        return new ResponseEntity<>(pedidos, HttpStatus.OK);
     }
 
-    // Endpoint para obtener un pedido por su ID
-    @GetMapping("/{id}") // Ejemplo: /api/pedidos/1
-    public ResponseEntity<Pedido> getPedidoById(@PathVariable Long id) { // Usar Long para ID de BBDD
+    @GetMapping("/{id}")
+    public ResponseEntity<Pedido> getPedidoById(@PathVariable Long id) {
         Optional<Pedido> pedido = pedidoRepository.findById(id);
         if (pedido.isPresent()) {
-            return new ResponseEntity<>(pedido.get(), HttpStatus.OK); // Código 200 con el pedido
+            return new ResponseEntity<>(pedido.get(), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Código 404 si no se encuentra
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    // Endpoint para eliminar un pedido por su ID
-    @DeleteMapping("/{id}") // Ejemplo: /api/pedidos/1
-    public ResponseEntity<Void> deletePedido(@PathVariable Long id) { // Usar Long para ID de BBDD
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePedido(@PathVariable Long id) {
         if (pedidoRepository.existsById(id)) {
             pedidoRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Código 204 si la eliminación fue exitosa
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Código 404 si no se encuentra
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }

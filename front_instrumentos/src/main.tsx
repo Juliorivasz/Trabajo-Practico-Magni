@@ -14,6 +14,7 @@ const AbmInstrumentos = lazy(() =>
 );
 const Cart = lazy(() => import("./componentes/Cart").then((module) => ({ default: module.Cart })));
 const Login = lazy(() => import("./componentes/Login").then((module) => ({ default: module.Login })));
+const Charts = lazy(() => import("./componentes/charts/Charts").then((module) => ({ default: module.Charts })));
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
@@ -38,6 +39,7 @@ createRoot(document.getElementById("root")!).render(
                 path="/login"
                 element={<Login />}
               />
+              {/* rutas privadas */}
               <Route
                 path="/abm"
                 element={
@@ -51,6 +53,14 @@ createRoot(document.getElementById("root")!).render(
                 element={
                   <RutasPrivada>
                     <Cart />
+                  </RutasPrivada>
+                }
+              />
+              <Route
+                path="/charts"
+                element={
+                  <RutasPrivada>
+                    <Charts />
                   </RutasPrivada>
                 }
               />

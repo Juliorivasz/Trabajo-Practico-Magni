@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth"; // Asegúrate de que esta ruta sea correcta
+import { BotonNavegar } from "./botones";
 
 export const Login = () => {
   const [nombreUsuario, setNombreUsuario] = useState("");
@@ -48,6 +49,10 @@ export const Login = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+        <BotonNavegar
+          texto={`Volver`}
+          destino="/home"
+        />
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Iniciar Sesión</h2>
         <p className="text-center text-gray-600 mb-8">Bienvenido de nuevo</p>
 
