@@ -48,3 +48,10 @@ export type PedidoApiResponse = {
   totalPedido: number; // El total ya calculado por el backend
   detalles: PedidoDetalleApiResponse[];
 };
+
+export type UsuarioApi = {
+  id: number;
+  nombreUsuario: string;
+  rol: string;
+  // La clave NO debería venir de la API por seguridad, por eso no está aquí.
+};

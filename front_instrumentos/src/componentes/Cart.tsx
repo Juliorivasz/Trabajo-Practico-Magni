@@ -5,7 +5,7 @@ import { Pedido } from "../models/Pedido";
 import { PedidoService } from "../services/pedidoServicio";
 import { BotonNavegar } from "./botones";
 
-const Cart = () => {
+export const Cart = () => {
   const { carrito, agregarAlCarrito, restarDelCarrito, quitarDelCarrito, limpiarCarrito } = useCart();
 
   const navigate = useNavigate();
@@ -136,5 +136,3 @@ const Cart = () => {
     </div>
   );
 };
-
-export default Cart;

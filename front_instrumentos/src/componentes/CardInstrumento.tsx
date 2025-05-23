@@ -1,3 +1,5 @@
+// src/componentes/CardInstrumento.tsx
+import { useAuth } from "../context/useAuth";
 import { useCart } from "../context/useCart";
 import { Instrumento } from "../models/Instrumento";
 import { BotonAgregarCarrito, BotonDetalles } from "./botones";
@@ -9,8 +11,13 @@ interface CardInstrumentoProps {
 
 export const CardInstrumento: React.FC<CardInstrumentoProps> = ({ instrumento }) => {
   const { agregarAlCarrito } = useCart();
+  const { isAuthenticated } = useAuth(); // Obtenemos el estado de autenticación
 
   const agregarInstrumentoAlCarrito = () => {
+    if (!isAuthenticated) {
+      alert("Debes iniciar sesión para agregar productos al carrito.");
+      return;
+    }
     agregarAlCarrito(instrumento);
   };
 
@@ -38,10 +45,15 @@ export const CardInstrumento: React.FC<CardInstrumentoProps> = ({ instrumento })
             <BotonDetalles id={Number(instrumento.getId())} />
           </div>
           <div className="mt-2 flex space-x-4">
-            <BotonAgregarCarrito
-              stock={String(instrumento.getCantidadVendida())}
-              agregarInstrumentoAlCarrito={agregarInstrumentoAlCarrito}
-            />
+            {/* El botón "Agregar al Carrito" solo se muestra si el usuario está autenticado */}
+            {isAuthenticated ? (
+              <BotonAgregarCarrito
+                stock={String(instrumento.getCantidadVendida())}
+                agregarInstrumentoAlCarrito={agregarInstrumentoAlCarrito}
+              />
+            ) : (
+              <p className="text-sm text-gray-500">Inicia sesión para agregar al carrito.</p>
+            )}
           </div>
         </div>
       </div>

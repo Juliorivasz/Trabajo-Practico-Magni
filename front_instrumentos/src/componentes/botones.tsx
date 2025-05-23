@@ -37,16 +37,18 @@ export function BotonDetalles({ id }: { id: number }) {
 
 interface BotonNavegarProps {
   texto: string;
-  destino: string;
+  destino?: string;
+  onclick?: VoidFunction;
 }
 
-export function BotonNavegar({ texto, destino }: BotonNavegarProps) {
-  const esAncla = destino.startsWith("#") || destino.includes("#");
+export function BotonNavegar({ texto, destino, onclick }: BotonNavegarProps) {
+  const esAncla = destino?.startsWith("#") || destino?.includes("#");
 
   if (esAncla) {
     return (
       <a
         href={destino}
+        onClick={onclick}
         className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded">
         {texto}
       </a>
@@ -54,7 +56,8 @@ export function BotonNavegar({ texto, destino }: BotonNavegarProps) {
   }
   return (
     <Link
-      to={destino}
+      to={destino ?? ""}
+      onClick={onclick}
       className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded">
       {texto}
     </Link>
