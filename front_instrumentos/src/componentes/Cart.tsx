@@ -1,9 +1,10 @@
-import { useCart } from "../context/useCart";
 import { useNavigate } from "react-router-dom";
-import { PedidoDetalle } from "../models/PedidoDetalle";
+import { useCart } from "../context/useCart";
 import { Pedido } from "../models/Pedido";
+import { PedidoDetalle } from "../models/PedidoDetalle";
 import { PedidoService } from "../services/pedidoServicio";
 import { BotonNavegar } from "./botones";
+import CheckoutMP from "./CheckoutMP";
 
 export const Cart = () => {
   const { carrito, agregarAlCarrito, restarDelCarrito, quitarDelCarrito, limpiarCarrito } = useCart();
@@ -132,6 +133,7 @@ export const Cart = () => {
           }}>
           Guardar carrito
         </button>
+        <CheckoutMP />
       </div>
     </div>
   );
