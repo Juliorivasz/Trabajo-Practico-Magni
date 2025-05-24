@@ -24,19 +24,22 @@ public class MercadoPagoService {
 
         MercadoPagoConfig.setAccessToken(this.accessToken);
 
-        PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
-                .id(String.valueOf(pedido.getId()))
-                .title(pedido.getDetalles().getFirst().getInstrumento().getInstrumento())
-                .description(pedido.getDetalles().getFirst().getInstrumento().getDescripcion())
-                .pictureUrl(pedido.getDetalles().getFirst().getInstrumento().getImagen())
-                .categoryId(String.valueOf(pedido.getDetalles().getFirst().getInstrumento().getCategoria().getId()))
-                .quantity(pedido.getDetalles().getFirst().getCantidad())
-                .currencyId("ARS")
-                .unitPrice(BigDecimal.valueOf(pedido.getDetalles().getFirst().getInstrumento().getPrecio()))
-                .build();
-
         List<PreferenceItemRequest> items = new ArrayList<>();
-        items.add(itemRequest);
+
+        // Usamos forEach para recorrer cada detalle del pedido
+        pedido.getDetalles().forEach(detalle -> {
+            PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
+                    .id(String.valueOf(detalle.getInstrumento().getId())) // Usamos el ID del instrumento como ID del ítem
+                    .title(detalle.getInstrumento().getInstrumento())
+                    .description(detalle.getInstrumento().getDescripcion())
+                    .pictureUrl(detalle.getInstrumento().getImagen())
+                    .categoryId(String.valueOf(detalle.getInstrumento().getCategoria().getId()))
+                    .quantity(detalle.getCantidad())
+                    .currencyId("ARS")
+                    .unitPrice(BigDecimal.valueOf(detalle.getInstrumento().getPrecio()))
+                    .build();
+            items.add(itemRequest);
+        });
 
         PreferenceBackUrlsRequest backURLs = PreferenceBackUrlsRequest.builder()
                 .success("http://localhost:5173/aprobado")
@@ -56,7 +59,8 @@ public class MercadoPagoService {
         mpPreference.setStatusCode(preference.getResponse().getStatusCode());
         mpPreference.setId(preference.getId());
 
+        System.out.println(mpPreference);
+
         return mpPreference;
     }
 }
-
